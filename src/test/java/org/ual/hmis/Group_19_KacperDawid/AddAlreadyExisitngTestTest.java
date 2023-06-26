@@ -30,19 +30,22 @@ public class AddAlreadyExisitngTestTest {
   JavascriptExecutor js;
   @Before
   public void setUp() {
+    // Browser selector
     int browser= 0; // 0: firefox, 1: chrome,...
     Boolean headless = false;
 
     switch (browser) {
       case 0:
-        System.setProperty("webdriver.gecko.driver",  "drivers/geckodriver.exe");
+
+        System.setProperty("webdriver.gecko.driver", "drivers/geckodriver-v0.33.0-win-aarch64/geckodriver.exe");
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         if (headless) firefoxOptions.setHeadless(headless);
         driver = new FirefoxDriver(firefoxOptions);
 
         break;
       case 1:
-        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
+
+        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver_win32/chromedriver.exe");
         ChromeOptions chromeOptions = new ChromeOptions();
         if (headless) chromeOptions.setHeadless(headless);
         chromeOptions.addArguments("window-size=1920,1080");
@@ -67,15 +70,20 @@ public class AddAlreadyExisitngTestTest {
     // Step # | name | target | value
     // 1 | open | http://localhost:8080/#/Home | 
     driver.get("http://localhost:8080/#/Home");
-    // 2 | setWindowSize | 1074x808 | 
+    // 2 | waitForElementVisible | xpath=(//a[contains(text(),'Todo List')]) | 30000
+    {
+      WebDriverWait wait = new WebDriverWait(driver, 30);
+      wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//a[contains(text(),\'Todo List\')])")));
+    }
+    // 3 | setWindowSize | 1074x808 | 
     driver.manage().window().setSize(new Dimension(1074, 808));
-    // 3 | click | css=li:nth-child(2) > .nav-link | 
-    driver.findElement(By.cssSelector("li:nth-child(2) > .nav-link")).click();
-    // 4 | click | css=.input-group:nth-child(1) > .form-control | 
-    driver.findElement(By.cssSelector(".input-group:nth-child(1) > .form-control")).click();
-    // 5 | type | css=.ng-dirty | 12311
+    // 4 | click | xpath=(//a[contains(text(),'Todo List')])[2] | 
+    driver.findElement(By.xpath("(//a[contains(text(),\'Todo List\')])[2]")).click();
+    // 5 | click | xpath=//input | 
+    driver.findElement(By.xpath("//input")).click();
+    // 6 | type | css=.ng-dirty | 12311
     driver.findElement(By.cssSelector(".ng-dirty")).sendKeys("12311");
-    // 6 | click | css=.input-group:nth-child(1) .btn | 
-    driver.findElement(By.cssSelector(".input-group:nth-child(1) .btn")).click();
+    // 7 | click | xpath=//button[contains(.,'Add')] | 
+    driver.findElement(By.xpath("//button[contains(.,\'Add\')]")).click();
   }
 }

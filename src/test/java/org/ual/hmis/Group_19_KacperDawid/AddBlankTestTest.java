@@ -7,8 +7,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.Dimension;
@@ -28,11 +30,35 @@ public class AddBlankTestTest {
   JavascriptExecutor js;
   @Before
   public void setUp() {
-    driver = new ChromeDriver();
+    // Browser selector
+    int browser= 0; // 0: firefox, 1: chrome,...
+    Boolean headless = false;
+
+    switch (browser) {
+      case 0:
+
+        System.setProperty("webdriver.gecko.driver", "drivers/geckodriver-v0.33.0-win-aarch64/geckodriver.exe");
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        if (headless) firefoxOptions.setHeadless(headless);
+        driver = new FirefoxDriver(firefoxOptions);
+
+        break;
+      case 1:
+
+        System.setProperty("webdriver.chrome.driver", "drivers/chromedriver_win32/chromedriver.exe");
+        ChromeOptions chromeOptions = new ChromeOptions();
+        if (headless) chromeOptions.setHeadless(headless);
+        chromeOptions.addArguments("window-size=1920,1080");
+        driver = new ChromeDriver(chromeOptions);
+
+        break;
+
+      default:
+        fail("Please select a browser");
+        break;
+    }
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
-    System.setProperty("webdriver.gecko.driver", "drivers/geckodriver-v0.33.0-win-aarch64/geckodriver.exe");
-    System.setProperty("webdriver.chrome.driver", "drivers/chromedriver_win32/chromedriver.exe");
   }
   @After
   public void tearDown() {
@@ -44,11 +70,16 @@ public class AddBlankTestTest {
     // Step # | name | target | value
     // 1 | open | http://localhost:8080/#/Home | 
     driver.get("http://localhost:8080/#/Home");
-    // 2 | setWindowSize | 1061x808 | 
+    // 2 | waitForElementVisible | xpath=(//a[contains(text(),'Todo List')]) | 30000
+    {
+      WebDriverWait wait = new WebDriverWait(driver, 30);
+      wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//a[contains(text(),\'Todo List\')])")));
+    }
+    // 3 | setWindowSize | 1061x808 | 
     driver.manage().window().setSize(new Dimension(1061, 808));
-    // 3 | click | css=li:nth-child(2) > .nav-link | 
-    driver.findElement(By.cssSelector("li:nth-child(2) > .nav-link")).click();
-    // 4 | click | css=.input-group:nth-child(1) .btn | 
-    driver.findElement(By.cssSelector(".input-group:nth-child(1) .btn")).click();
+    // 4 | click | xpath=(//a[contains(text(),'Todo List')])[2] | 
+    driver.findElement(By.xpath("(//a[contains(text(),\'Todo List\')])[2]")).click();
+    // 5 | click | xpath=//button[contains(.,'Add')] | 
+    driver.findElement(By.xpath("//button[contains(.,\'Add\')]")).click();
   }
 }
