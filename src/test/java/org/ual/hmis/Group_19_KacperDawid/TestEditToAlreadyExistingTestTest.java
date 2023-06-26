@@ -24,6 +24,9 @@ import org.openqa.selenium.Keys;
 import java.util.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+
 public class TestEditToAlreadyExistingTestTest {
   private WebDriver driver;
   private Map<String, Object> vars;
@@ -32,7 +35,8 @@ public class TestEditToAlreadyExistingTestTest {
   public void setUp() {
     // Browser selector
     int browser= 0; // 0: firefox, 1: chrome,...
-    Boolean headless = false;
+    Boolean headless = true;
+//    HtmlUnitDriver driver = new HtmlUnitDriver(true);
 
     switch (browser) {
       case 0:
@@ -40,7 +44,7 @@ public class TestEditToAlreadyExistingTestTest {
         System.setProperty("webdriver.gecko.driver", "drivers/geckodriver-v0.33.0-win-aarch64/geckodriver.exe");
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         if (headless) firefoxOptions.setHeadless(headless);
-        driver = new FirefoxDriver(firefoxOptions);
+        driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_38, true);
 
         break;
       case 1:
@@ -49,7 +53,7 @@ public class TestEditToAlreadyExistingTestTest {
         ChromeOptions chromeOptions = new ChromeOptions();
         if (headless) chromeOptions.setHeadless(headless);
         chromeOptions.addArguments("window-size=1920,1080");
-        driver = new ChromeDriver(chromeOptions);
+        driver = new HtmlUnitDriver(BrowserVersion.CHROME, true);
 
         break;
 
